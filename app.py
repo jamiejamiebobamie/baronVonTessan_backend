@@ -144,6 +144,6 @@ def increment_likes():
 
 
 if __name__ == '__main__':
-    port = os.getenv("PORT", 7000)
-    app.run(host = '0.0.0.0', port = int(port), debug=True)
-    # app.run() // might need this if heroku doesn't want me to specify the port.
+    # port = os.getenv("PORT", 7000)
+    # app.run(host = '0.0.0.0', port = int(port), debug=True)
+    app.run() # might need this if heroku doesn't want me to specify the port.
