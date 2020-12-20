@@ -13,7 +13,7 @@ mongo = MongoClient(MONGO_URI)
 from random import randrange, randint
 from flask_cors import CORS, cross_origin
 # public API, allow all requests *
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}}) # change this to only accept from my frontend
+cors = CORS(app, resources={r"/api/*": {"origins": "https://baron-von-tessan.herokuapp.com"}}) # change this to only accept from my frontend
 
 @app.route('/')
 def _main():
