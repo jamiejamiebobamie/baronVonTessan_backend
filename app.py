@@ -13,7 +13,7 @@ mongo = MongoClient(MONGO_URI)
 from random import randrange, randint
 from flask_cors import CORS, cross_origin
 # public API, allow all requests *
-cors = CORS(app, resources={r"/api/*": {"origins": "https://baron-von-tessan.herokuapp.com"}}) # change this to only accept from my frontend
+# cors = CORS(app, resources={r"/api/*": {"origins": "https://baron-von-tessan.herokuapp.com"}}) # change this to only accept from my frontend
 
 @app.route('/')
 def _main():
@@ -23,17 +23,22 @@ def _main():
 # pull quote from db.
 @app.route('/test-db')
 def test_DB():
+
     db = mongo.db
     drawing_data_collection = db.BvT_drawingdata
 
-    new_document = {
-            "vertices" : [['.22','.67676']],
-            "description" : "hi",
-            "likes" : 15,
-        }
-    inserted_ok = drawing_data_collection.insert_one(new_document).acknowledged
+    # print(number)
+    rand_drawings = drawing_data_collection.aggregate([
+      { "$sample": {"size": int(number) }},
+      {"$project": { "_id": { "$toString": "$_id" },
+                      "vertices" : 1,
+                      "description": 1,
+                      "likes": 1}
+       }
+    ])
+    rand_drawings = list(rand_drawings)
 
-    return render_template('index.html', title='Home',greeting=inserted_ok)
+    return render_template('index.html', title='Home',greeting=rand_drawings)
 
 
 # serve < number > random drawings from database
@@ -58,7 +63,7 @@ def serve_random_drawings(number):
 
 # serve 20 popular drawings from the database based on likes
 @app.route('/api/v1/twenty-liked-drawings',methods=['GET'])
-@cross_origin()
+@cross_origin(["https://baron-von-tessan.herokuapp.com"])
 def serve_liked_drawings():
     db = mongo.db
     drawing_data_collection = db.BvT_drawingdata
@@ -87,7 +92,7 @@ def serve_liked_drawings():
 
 # create new drawing document for database
 @app.route('/api/v1/add-drawing-to-db',methods=['POST'])
-@cross_origin()
+@cross_origin(["https://baron-von-tessan.herokuapp.com"])
 def add_drawing_to_db():
     inserted_ok = False
     data = request.get_json()
@@ -118,7 +123,7 @@ def add_drawing_to_db():
 
 # increment the likes of the drawings.
 @app.route('/api/v1/increment-likes',methods=['POST'])
-@cross_origin()
+@cross_origin(["https://baron-von-tessan.herokuapp.com"])
 def increment_likes():
     successes = [False]
     data = request.get_json()
