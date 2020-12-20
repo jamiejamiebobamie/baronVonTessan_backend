@@ -7,7 +7,7 @@ from bson.objectid import ObjectId
 app = Flask(__name__)
 
 MONGO_URI = str(os.environ.get('MONGO_URI'))
-MONGO_URI = "mongodb://127.0.0.1:27017/database"
+# MONGO_URI = "mongodb://127.0.0.1:27017/database"
 mongo = MongoClient(MONGO_URI)
 
 from random import randrange, randint
