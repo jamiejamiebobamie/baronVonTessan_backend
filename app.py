@@ -106,10 +106,11 @@ def add_drawing_to_db():
             description = data["drawingDescription"]
             likes = 0
 
+            # a space needs to be added here for frontend...
+            description = description.replace("|","") + " "
             new_document = {
                     "vertices" : vertices,
-                    # a space needs to be added here for frontend...
-                    "description" : description + " ",
+                    "description" : description,
                     "likes" : likes,
                 }
             inserted_ok = drawing_data_collection.insert_one(new_document).acknowledged
