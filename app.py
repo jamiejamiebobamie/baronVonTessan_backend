@@ -23,7 +23,7 @@ def _main():
 # pull quote from db.
 @app.route('/test-db')
 def test_DB():
-    db = mongo.database
+    db = mongo.db
     drawing_data_collection = db.BvT_drawingdata
 
     new_document = {
@@ -40,7 +40,7 @@ def test_DB():
 @app.route('/api/v1/random-drawings/<number>',methods=['GET'])
 @cross_origin()
 def serve_random_drawings(number):
-    db = mongo.database
+    db = mongo.db
     drawing_data_collection = db.BvT_drawingdata
 
     # print(number)
@@ -60,7 +60,7 @@ def serve_random_drawings(number):
 @app.route('/api/v1/twenty-liked-drawings',methods=['GET'])
 @cross_origin()
 def serve_liked_drawings():
-    db = mongo.database
+    db = mongo.db
     drawing_data_collection = db.BvT_drawingdata
     length = drawing_data_collection.count()
     best_drawings = drawing_data_collection.aggregate([
@@ -99,7 +99,7 @@ def add_drawing_to_db():
             and len(data["drawingDescription"])
             and data["drawingDescription"] != "I drew a..."):
 
-            db = mongo.database
+            db = mongo.db
             drawing_data_collection = db.BvT_drawingdata
 
             vertices = data["drawingData"]
@@ -126,7 +126,7 @@ def increment_likes():
         print(data)
         _ids = data["_ids"]
         if _ids:
-            db = mongo.database
+            db = mongo.db
             drawing_data_collection = db.BvT_drawingdata
             for i in range(len(_ids)):
                 object_id = _ids[i]
