@@ -29,7 +29,7 @@ def test_DB():
 
     # print(number)
     rand_drawings = drawing_data_collection.aggregate([
-      { "$sample": {"size": int(number) }},
+      { "$sample": {"size": 1 }},
       {"$project": { "_id": { "$toString": "$_id" },
                       "vertices" : 1,
                       "description": 1,
@@ -39,7 +39,6 @@ def test_DB():
     rand_drawings = list(rand_drawings)
 
     return render_template('index.html', title='Home',greeting=rand_drawings)
-
 
 # serve < number > random drawings from database
 @app.route('/api/v1/random-drawings/<number>',methods=['GET'])
