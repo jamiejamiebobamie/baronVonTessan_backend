@@ -118,7 +118,7 @@ def add_drawing_to_db():
 
 # increment the likes of the drawings.
 @app.route('/api/v1/increment-likes',methods=['POST'])
-# @cross_origin()
+@cross_origin()
 def increment_likes():
     successes = [False]
     data = request.get_json()
