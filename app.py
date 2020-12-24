@@ -91,7 +91,7 @@ def serve_liked_drawings(number):
     #     drawing_data.append(rand_best_drawing)
     # print(drawing_data)
     best_drawings = list(best_drawings)
-
+    print(best_drawings)
     return {"drawing_data": best_drawings}
 
 # create new drawing document for database
