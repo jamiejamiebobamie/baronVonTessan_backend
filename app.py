@@ -61,33 +61,38 @@ def serve_random_drawings(number):
     return {"drawing_data": rand_drawings}
 
 # serve 20 popular drawings from the database based on likes
-@app.route('/api/v1/twenty-liked-drawings',methods=['GET'])
+@app.route('/api/v1/liked-drawings/<number>',methods=['GET'])
 @cross_origin(["https://baron-von-tessan.herokuapp.com"])
-def serve_liked_drawings():
+def serve_liked_drawings(number):
     db = mongo.db
     drawing_data_collection = db.BvT_drawingdata
+
     length = drawing_data_collection.count()
+
     best_drawings = drawing_data_collection.aggregate([
       { "$sort": { "likes": -1} },
-      { "$limit": length/3},
+      # { "$limit": length/3},
+      { "$sample": {"size": int(number) }},
       {"$project": { "_id": { "$toString": "$_id" },
                       "vertices" : 1,
                       "description": 1,
                       "likes": 1}
        }
     ])
-    drawing_data = []
+    # drawing_data = []
 
     # testing.
-    length = max(length,20)
-
-    for _ in range(length):
-        best_drawings = list(best_drawings)
-        rand_integer = randint(0,len(best_drawings)-1)
-        rand_best_drawing = best_drawings[rand_integer]
-        drawing_data.append(rand_best_drawing)
+    # length = max(length,20)
+    #
+    # for _ in range(length):
+    #     best_drawings = list(best_drawings)
+    #     rand_integer = randint(0,len(best_drawings)-1)
+    #     rand_best_drawing = best_drawings[rand_integer]
+    #     drawing_data.append(rand_best_drawing)
     # print(drawing_data)
-    return {"drawing_data": drawing_data}
+    best_drawings = list(best_drawings)
+
+    return {"drawing_data": best_drawings}
 
 # create new drawing document for database
 @app.route('/api/v1/add-drawing-to-db',methods=['POST'])
