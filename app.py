@@ -71,28 +71,37 @@ def serve_liked_drawings(number):
 
     best_drawings = drawing_data_collection.aggregate([
       { "$sort": { "likes": -1} },
-      # { "$limit": length/3},
-      { "$sample": {"size": int(number) }},
+      { "$limit": length/3},
+      # { "$sample": {"size": int(number) }},
       {"$project": { "_id": { "$toString": "$_id" },
                       "vertices" : 1,
                       "description": 1,
                       "likes": 1}
        }
     ])
-    # drawing_data = []
+
+    number = int(number)
+    if number > length:
+        number = length
+
+    best_drawings = list(best_drawings)
+
 
     # testing.
     # length = max(length,20)
-    #
-    # for _ in range(length):
-    #     best_drawings = list(best_drawings)
-    #     rand_integer = randint(0,len(best_drawings)-1)
-    #     rand_best_drawing = best_drawings[rand_integer]
-    #     drawing_data.append(rand_best_drawing)
-    # print(drawing_data)
-    best_drawings = list(best_drawings)
-    print(best_drawings)
-    return {"drawing_data": best_drawings}
+    drawing_data = []
+    j = 0
+    for i in range(number):
+        rand_integer = randint(0,len(best_drawings)-1 - j)
+        rand_best_drawing = best_drawings[rand_integer]
+        drawing_data.append(rand_best_drawing)
+        current_last = len(best_drawings)-1-j
+        best_drawings[current_last], best_drawings[rand_integer] = best_drawings[rand_integer], best_drawings[current_last]
+        j+=1
+        print(current_last,rand_integer,rand_best_drawing["likes"])
+    # best_drawings = list(best_drawings)
+    # print(best_drawings)
+    return {"drawing_data": drawing_data}
 
 # create new drawing document for database
 @app.route('/api/v1/add-drawing-to-db',methods=['POST'])
