@@ -60,49 +60,55 @@ def serve_random_drawings(number):
     # print(rand_drawings)
     return {"drawing_data": rand_drawings}
 
-# serve 20 popular drawings from the database based on likes
+# serve <number> popular drawings from the database based on likes
 @app.route('/api/v1/liked-drawings/<number>',methods=['GET'])
 @cross_origin(["https://baron-von-tessan.herokuapp.com"])
 def serve_liked_drawings(number):
+    # get appropriate collection from database
     db = mongo.db
     drawing_data_collection = db.BvT_drawingdata
-
+    # compute the length of the cllection (number of entries)
     length = drawing_data_collection.count()
-
+    # sort the collection descendingly based on likes
+    # skim the top third
+    # this does not work. after doing some testing,
+        # the: { "$sort": { "likes": -1} } option of the aggregate is not working
+        # correctly. it is only partially sorting the collection...
     best_drawings = drawing_data_collection.aggregate([
       { "$sort": { "likes": -1} },
       { "$limit": length/3},
-      # { "$sample": {"size": int(number) }},
       {"$project": { "_id": { "$toString": "$_id" },
                       "vertices" : 1,
                       "description": 1,
                       "likes": 1}
        }
     ])
-
+    # check to make sure the asked for number of drawings does not exceed the
+        # length of the collection.
     number = int(number)
     if number > length:
         number = length
 
+    # convert the mongodb aggregate into a list
     best_drawings = list(best_drawings)
-    print(len(best_drawings),length)
-    for drawing in best_drawings:
-        print(drawing["description"],drawing["likes"])
 
-    # testing.
-    # length = max(length,20)
+    # initialize a return array for the data and a index increment.
     drawing_data = []
-    j = 0
+
+    # run a for loop for the given number of iterations
     for i in range(number):
-        rand_integer = randint(0,len(best_drawings)-1 - j)
+        # get a random integer from 0 to
+            # the length of the best_drawings array - the iteration number
+        current_last = len(best_drawings)-1-i
+        rand_integer = randint(0, current_last)
         rand_best_drawing = best_drawings[rand_integer]
         drawing_data.append(rand_best_drawing)
-        current_last = len(best_drawings)-1-j
+        # fisher-yates shuffle
         best_drawings[current_last], best_drawings[rand_integer] = best_drawings[rand_integer], best_drawings[current_last]
-        j+=1
-        # print(current_last,rand_integer,rand_best_drawing["likes"])
-    # best_drawings = list(best_drawings)
-    # print(best_drawings)
+
+    # for debugging
+    # for drawing in best_drawings:
+    #     print(drawing["likes"],drawing["description"])
     return {"drawing_data": drawing_data}
 
 # create new drawing document for database
@@ -119,6 +125,10 @@ def add_drawing_to_db():
             and len(data["drawingDescription"])
             and data["drawingDescription"] != "I drew a..."):
 
+            print(len(data["drawingData"]) < 7000
+                , len(data["drawingDescription"])
+                , data["drawingDescription"] != "I drew a...")
+                
             db = mongo.db
             drawing_data_collection = db.BvT_drawingdata
 
