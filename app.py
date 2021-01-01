@@ -85,7 +85,9 @@ def serve_liked_drawings(number):
         number = length
 
     best_drawings = list(best_drawings)
-
+    print(len(best_drawings),length)
+    for drawing in best_drawings:
+        print(drawing["description"],drawing["likes"])
 
     # testing.
     # length = max(length,20)
@@ -98,7 +100,7 @@ def serve_liked_drawings(number):
         current_last = len(best_drawings)-1-j
         best_drawings[current_last], best_drawings[rand_integer] = best_drawings[rand_integer], best_drawings[current_last]
         j+=1
-        print(current_last,rand_integer,rand_best_drawing["likes"])
+        # print(current_last,rand_integer,rand_best_drawing["likes"])
     # best_drawings = list(best_drawings)
     # print(best_drawings)
     return {"drawing_data": drawing_data}
